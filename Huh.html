@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For My Love 💖</title>
+<style>
+body {
+    margin: 0;
+    background: white;
+    font-family: 'Poppins', 'Comic Sans MS', cursive;
+    overflow: hidden;
+}
+
+.screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    z-index: 100;
+    background: white;
+}
+
+.hidden { 
+    opacity: 0; 
+    pointer-events: none; 
+    z-index: 1;
+}
+.slide-in { transform: translateX(100%); }
+.active { 
+    transform: translateX(0); 
+    opacity: 1; 
+    z-index: 100;
+}
+
+h1 {
+    color: #ff9ecf;
+    text-align: center;
+    font-size: 2.5rem;
+    margin: 20px;
+}
+
+.options {
+    display: flex;
+    gap: 40px;
+}
+
+.option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.option.green { border: 4px solid #9cffb3; }
+.option.pink { border: 4px solid #ffb6d9; }
+
+iframe {
+    width: 220px;
+    height: 220px;
+    border: none;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', 'Comic Sans MS', cursive;
+}
+
+.select { background: #9cffb3; }
+.next { background: #9cffb3; font-size: 1.1rem; }
+
+.center {
+    text-align: center;
+}
+
+.fadeText {
+    font-size: 2.5rem;
+    color: #ff9ecf;
+    opacity: 0;
+    animation: fade 2s forwards;
+}
+
+@keyframes fade {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+canvas { 
+    margin-bottom: 20px; 
+    display: block;
+}
+
+#yesBtn { 
+    background:#4CAF50; 
+    color:white;
+    transition: all 0.3s ease;
+}
+#noBtn { 
+    background:#F44336; 
+    color:white;
+    transition: all 0.3s ease;
+}
+
+#valentineQuestion {
+    color: #ff9ecf;
+    font-size: 2.5rem;
+    margin: 30px 0;
+}
+
+/* Make wrong screen full screen */
+#wrong {
+    background: white;
+    z-index: 150;
+}
+
+/* Make special screen full screen */
+#special {
+    background: white;
+    z-index: 150;
+}
+
+/* Make thinking screen full screen */
+#thinking {
+    background: white;
+    z-index: 200;
+}
+
+/* Valentine screen styles */
+#valentineScreen {
+    background: white;
+}
+
+#yesBtn.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    font-size: 4rem;
+    z-index: 10000;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.message-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    z-index: 1000;
+}
+
+.message-text {
+    font-size: 2.5rem;
+    color: #ff9ecf;
+    text-align: center;
+    padding: 20px;
+}
+
+#finalGif {
+    width: 350px;
+    height: 350px;
+    border: none;
+    margin-bottom: 30px;
+}
+
+#final h1 {
+    color: #ff9ecf;
+    font-size: 3rem;
+    animation: celebrate 0.5s infinite alternate;
+}
+
+@keyframes celebrate {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+</style>
+</head>
+<body>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz" class="screen active">
+    <h1 id="qText"></h1>
+    <div class="options">
+        <div id="opt1" class="option green"></div>
+        <div id="opt2" class="option pink"></div>
+    </div>
+</div>
+
+<!-- WRONG SCREEN -->
+<div id="wrong" class="screen hidden center">
+    <iframe id="wrongGif"></iframe>
+    <h1 id="wrongText"></h1>
+    <button class="next" onclick="retry()">Try again</button>
+</div>
+
+<!-- SPECIAL LAST -->
+<div id="special" class="screen hidden center">
+    <iframe id="specialGif"></iframe>
+    <h1 id="specialText"></h1>
+    <button id="specialNext" class="next">Next</button>
+</div>
+
+<!-- TRANSITION TEXT -->
+<div id="thinking" class="screen hidden">
+    <div class="message-container">
+        <div id="thinkingText" class="message-text"></div>
+    </div>
+</div>
+
+<!-- VALENTINE SCREEN -->
+<div id="valentineScreen" class="screen hidden center">
+    <canvas id="heartCanvas" width="400" height="400"></canvas>
+    <h1 id="valentineQuestion">Will you be my Valentine?</h1>
+    <div class="button-container">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+</div>
+
+<!-- FINAL YAY SCREEN -->
+<div id="final" class="screen hidden center">
+    <iframe id="finalGif" src=""></iframe>
+    <h1>YAYYYYY MY BABYYY!! 💖</h1>
+</div>
+
+<script>
+let q = 0, firstWrong = true;
+let canProceedToValentine = false;
+
+const questions = [
+{
+ text:"what's the gif I usually use?",
+ correct:0,
+ opts:[
+  ["https://tenor.com/embed/5305028030491560871",""],
+  ["https://tenor.com/embed/9980836029424925531",""]
+ ]
+},
+{
+ text:"what's the most anime I love?",
+ correct:0,
+ opts:[
+  ["https://tenor.com/embed/471413852191650964","dragon ball z"],
+  ["https://tenor.com/embed/23861320","one piece"]
+ ]
+},
+{
+ text:"who's the most character I like?",
+ correct:1,
+ opts:[
+  ["https://tenor.com/embed/5009523","Goku"],
+  ["https://tenor.com/embed/798869082554796710","Gohan"]
+ ]
+},
+{
+ text:"lastly who loves the other more?",
+ correct:0,
+ opts:[
+  ["https://tenor.com/embed/15438397176168163919","me"],
+  ["https://tenor.com/embed/27379065","you"]
+ ]
+}
+];
+
+function loadQ() {
+ document.getElementById("qText").innerText = questions[q].text;
+ ["opt1","opt2"].forEach((id,i)=>{
+   document.getElementById(id).innerHTML =
+   `<iframe src="${questions[q].opts[i][0]}"></iframe>
+    <div>${questions[q].opts[i][1]}</div>
+    <button class="select" onclick="answer(${i})">Select</button>`;
+ });
+}
+loadQ();
+
+function answer(i){
+ if(i===questions[q].correct){
+   q++;
+   if(q===questions.length){
+     // Check if last question was answered with "me"
+     if(questions[questions.length-1].correct === 0 && i === 0) {
+       canProceedToValentine = true;
+       showSpecial(true);
+     } else {
+       showSpecial(false);
+     }
+   } else {
+     loadQ();
+   }
+ } else {
+   // Check if this is the last question and user chose "you" (option 1)
+   if (q === questions.length - 1 && i === 1) {
+     showSpecial(false);
+   } else {
+     showWrong();
+   }
+ }
+}
+
+function showWrong(){
+ document.getElementById("quiz").classList.add("hidden");
+ document.getElementById("quiz").style.zIndex = "1";
+ 
+ document.getElementById("wrong").classList.remove("hidden");
+ document.getElementById("wrong").style.zIndex = "150";
+ 
+ document.getElementById("wrongGif").src =
+ firstWrong ?
+ "https://tenor.com/embed/1273635370605410744":
+ "https://tenor.com/embed/10803886120200552564";
+ document.getElementById("wrongText").innerText =
+ firstWrong ?
+ "maybeee you forgot my lovee, try again":
+ "did you forget about meee?";
+ firstWrong=false;
+}
+
+function retry(){
+ document.getElementById("wrong").classList.add("hidden");
+ document.getElementById("wrong").style.zIndex = "1";
+ 
+ document.getElementById("quiz").classList.remove("hidden");
+ document.getElementById("quiz").style.zIndex = "100";
+}
+
+function showSpecial(win){
+ document.getElementById("quiz").classList.add("hidden");
+ document.getElementById("quiz").style.zIndex = "1";
+ 
+ document.getElementById("special").classList.remove("hidden");
+ document.getElementById("special").style.zIndex = "150";
+ 
+ const specialGif = document.getElementById("specialGif");
+ const specialText = document.getElementById("specialText");
+ const specialNext = document.getElementById("specialNext");
+ 
+ if(win){
+   specialGif.src = "https://tenor.com/embed/1790151932624174569";
+   specialText.innerText = "Well I was kidding since it's our anniversary I'm letting you win this time";
+   specialNext.disabled = false;
+   specialNext.style.opacity = "1";
+   specialNext.style.cursor = "pointer";
+   specialNext.innerText = "Next";
+   specialNext.onclick = startValentine;
+ } else {
+   specialGif.src = "https://tenor.com/embed/21945669";
+   specialText.innerText = "uhhh did you actually think you love me more?";
+   specialNext.disabled = false;
+   specialNext.style.opacity = "1";
+   specialNext.style.cursor = "pointer";
+   specialNext.innerText = "Try again";
+   specialNext.onclick = retryToLastQuestion;
+ }
+}
+
+function retryToLastQuestion() {
+ q = questions.length - 1;
+ document.getElementById("special").classList.add("hidden");
+ document.getElementById("special").style.zIndex = "1";
+ document.getElementById("quiz").classList.remove("hidden");
+ document.getElementById("quiz").style.zIndex = "100";
+ loadQ();
+}
+
+function startValentine(){
+ if (!canProceedToValentine) {
+   return;
+ }
+ 
+ document.getElementById("special").classList.add("hidden");
+ document.getElementById("special").style.zIndex = "1";
+ 
+ // Show first transition screen
+ const thinkingScreen = document.getElementById("thinking");
+ const thinkingText = document.getElementById("thinkingText");
+ thinkingScreen.classList.remove("hidden");
+ thinkingScreen.style.zIndex = "200";
+ 
+ // First message
+ thinkingText.innerText = "my love I have been thinking";
+ 
+ setTimeout(() => {
+   // Second message
+   thinkingText.innerText = "on how to ask you this";
+   
+   setTimeout(() => {
+     // Third message
+     thinkingText.innerText = "So..";
+     
+     setTimeout(() => {
+       thinkingScreen.classList.add("hidden");
+       thinkingScreen.style.zIndex = "1";
+       showValentineScreen();
+     }, 2000);
+   }, 2000);
+ }, 2000);
+}
+
+function showValentineScreen() {
+ const valentineScreen = document.getElementById("valentineScreen");
+ valentineScreen.classList.remove("hidden");
+ valentineScreen.style.zIndex = "100";
+ 
+ drawHeart();
+ setupValentineButtons();
+}
+
+function drawHeart(){
+ const canvas = document.getElementById("heartCanvas");
+ const ctx = canvas.getContext("2d");
+ let progress = 0;
+ 
+ function animate() {
+   ctx.clearRect(0, 0, canvas.width, canvas.height);
+   ctx.beginPath();
+   
+   // Draw heart shape
+   for(let i = 0; i <= progress; i += 0.01) {
+     let x = 16 * Math.pow(Math.sin(i), 3);
+     let y = -(13 * Math.cos(i) - 5 * Math.cos(2*i) - 2 * Math.cos(3*i) - Math.cos(4*i));
+     ctx.lineTo(canvas.width/2 + x * 10, canvas.height/2 + y * 10);
+   }
+   
+   ctx.strokeStyle = "#ff9ecf";
+   ctx.lineWidth = 3;
+   ctx.stroke();
+   
+   if(progress < Math.PI * 2) {
+     progress += 0.05;
+     requestAnimationFrame(animate);
+   }
+ }
+ 
+ animate();
+}
+
+function setupValentineButtons() {
+ const yesBtn = document.getElementById("yesBtn");
+ const noBtn = document.getElementById("noBtn");
+ let noClickCount = 0;
+ 
+ // Reset button styles
+ yesBtn.style.cssText = '';
+ noBtn.style.cssText = '';
+ yesBtn.innerText = "Yes";
+ noBtn.innerText = "No";
+ yesBtn.classList.remove("fullscreen");
+ noBtn.style.display = "inline-block";
+ 
+ yesBtn.onclick = function() {
+   showFinalScreen();
+ };
+ 
+ noBtn.onclick = function() {
+   noClickCount++;
+   
+   switch(noClickCount) {
+     case 1:
+       noBtn.innerText = "Are you sure?";
+       yesBtn.style.fontSize = "1.2rem";
+       yesBtn.style.padding = "12px 30px";
+       break;
+     case 2:
+       noBtn.innerText = "You're breaking my heart☹️";
+       yesBtn.style.fontSize = "1.4rem";
+       yesBtn.style.padding = "14px 35px";
+       break;
+     case 3:
+       noBtn.innerText = "Are you really really sure??";
+       yesBtn.style.fontSize = "1.6rem";
+       yesBtn.style.padding = "16px 40px";
+       break;
+     case 4:
+       yesBtn.classList.add("fullscreen");
+       yesBtn.innerText = "YES!!!";
+       noBtn.style.display = "none";
+       break;
+   }
+ };
+}
+
+function showFinalScreen() {
+ document.getElementById("valentineScreen").classList.add("hidden");
+ document.getElementById("valentineScreen").style.zIndex = "1";
+ 
+ const finalScreen = document.getElementById("final");
+ finalScreen.classList.remove("hidden");
+ finalScreen.style.zIndex = "100";
+ 
+ // Set the final GIF
+ document.getElementById("finalGif").src = "https://tenor.com/embed/4482198545344900061";
+}
+</script>
+</body>
+</html>
